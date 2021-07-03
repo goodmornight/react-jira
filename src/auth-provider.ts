@@ -8,34 +8,40 @@ export const getToken = () => window.localStorage.getItem(localStorageKey);
 
 export const handleUserResponse = ({ user }: { user: User }) => {
   window.localStorage.setItem(localStorageKey, user.token || "");
+  return user;
 };
 
-export const login = (param: { username: string; password: string }) => {
-  fetch(`${apiUrl}/login`, {
+export const login = (data: { username: string; password: string }) => {
+  return fetch(`${apiUrl}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(param),
+    body: JSON.stringify(data),
   }).then(async (response) => {
     if (response.ok) {
-      console.log(response);
+      return handleUserResponse(await response.json());
+    } else {
+      return Promise.reject(await response.json());
     }
   });
 };
 
-export const register = (param: { username: string; password: string }) => {
-  fetch(`${apiUrl}/register`, {
+export const register = (data: { username: string; password: string }) => {
+  return fetch(`${apiUrl}/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(param),
+    body: JSON.stringify(data),
   }).then(async (response) => {
     if (response.ok) {
-      console.log(response);
+      return handleUserResponse(await response.json());
+    } else {
+      return Promise.reject(await response.json());
     }
   });
 };
 
-export const logout = () => window.localStorage.removeItem(localStorageKey);
+export const logout = async () =>
+  window.localStorage.removeItem(localStorageKey);
